@@ -1,60 +1,85 @@
-# Goorm Honam Pocket Wisdom
+# Pocket Wisdom
 
-Goorm Honam vibe coding 2일차 프로젝트로 만든 명언 수첩 웹사이트입니다. 노벨상 수상자와 지성인들의 문장을 카드형 캐러셀로 보여주며, 각 인물의 수상 분야와 직업 정보를 함께 확인할 수 있습니다.
+Goorm Honam 바이브코딩 **2일차** 프로젝트 — 유명인 명언을 보여주는 **Pocket Wisdom** 명언수첩 웹앱입니다.
+
+**저장소**: [github.com/jjsnoel/goorm-honam-pocket-wisdom](https://github.com/jjsnoel/goorm-honam-pocket-wisdom)
 
 ## 주요 기능
 
-- 명언 카드 자동 슬라이드
-- 이전/다음 버튼과 페이지 점 네비게이션
-- 명언별 분위기가 다른 3가지 비주얼 테마
-- 노벨 평화상, 문학상, 화학상, 물리학상, 경제학상 등 수상 분야 표시
-- 뽀모도로 타이머: 집중, 짧은 휴식, 긴 휴식 모드
-- 원형 링과 진행 막대로 타이머 진행 상황 표시
-- 하단 배너에서 명언칸과 타이머칸 전환
-- `poket-wisdom-quotes.md` 파일 기반 명언 데이터 로드
-- HTML, CSS, JavaScript만 사용하는 정적 웹사이트
+### 명언칸
+- **519개** 명언 (`quotes.json`) + 11개 카테고리 필터 (전체, 인생, 사랑, 지혜, 용기, 평화, 성장, 행복, 시간, 희망, 노벨 수상자)
+- 5초 간격 자동 슬라이드 + `<` `>` 수동 이동
+- 명언마다 다른 **3가지 비주얼 테마** (종이+형광펜 / 황혼 그라데이션 / 새벽 하늘)
+- **노벨 수상 분야** 배지 (평화상, 문학상, 화학상, 물리학상, 경제학상 등) + **인물 직업** 표기
+- **다크 / 라이트 모드** 전환 (설정 저장)
+- **SNS 공유** (Web Share API 또는 클립보드 복사)
+- **PNG 저장** (현재 명언 카드 캡처, html2canvas)
+
+### 타이머칸
+- **원 드래그**로 시간 설정 (마우스·터치)
+- **분 모드**: 1~60분 (1분 단위)
+- **시간 모드**: 1~12시간 (1시간 단위)
+- 시작 시 원이 **가득 찬 상태에서 줄어드는** 카운트다운
+- 파스텔 톤 UI (피치·세이지 그라데이션)
+
+### 공통
+- 하단 탭으로 **명언칸 / 타이머칸** 전환
 
 ## 실행 방법
 
-별도 빌드 과정은 필요하지 않습니다.
-
-로컬 서버로 실행하려면 프로젝트 폴더에서 다음 명령을 사용할 수 있습니다.
+`fetch`로 JSON을 불러오므로 **로컬 서버**로 실행해야 합니다. `index.html`을 더블클릭만 하면 명언이 로드되지 않을 수 있습니다.
 
 ```bash
-npx serve .
+# Python
+python -m http.server 5171
+
+# 또는 Node
+npx serve . -l 5171
 ```
 
-또는 VS Code의 Live Server 같은 정적 서버 도구로 `index.html`을 열어도 됩니다.
+브라우저에서 [http://localhost:5171](http://localhost:5171) 접속
 
 ## 파일 구성
 
 ```text
 .
-├── index.html
-├── style.css
-├── app.js
-├── poket-wisdom-quotes.md
-├── 147aeb0281f640370e699d7b007ce9ca.jpg
+├── index.html              # 앱 골격
+├── style.css               # 테마·캐러셀·도크·타이머 스타일
+├── app.js                  # 명언·타이머·공유·PNG 로직
+├── quotes.json             # 519개 명언 + 카테고리 (메인 데이터)
+├── poket-wisdom-quotes.md  # 노벨 수상자 20명 원본 (생성 스크립트용)
+├── scripts/
+│   └── generate-quotes.mjs # quotes.json 재생성
+├── 147aeb0281f640370e699d7b007ce9ca.jpg  # 디자인 레퍼런스
 ├── 567c7dce27ccd37eac32d41182598305.jpg
 └── c74d474758b8dff38396de82b6afe586.jpg
 ```
 
-## 데이터 구조
+## 데이터
 
-명언 데이터는 `poket-wisdom-quotes.md`의 마크다운 표에서 읽어옵니다. JavaScript는 각 행의 각주 링크를 분석해 수상 분야를 자동으로 분류합니다.
+- 앱은 **`quotes.json`** 을 불러옵니다.
+- `poket-wisdom-quotes.md`는 노벨 수상자 명언 원본이며, `scripts/generate-quotes.mjs`로 JSON을 다시 만들 수 있습니다.
 
-예시:
+```bash
+node scripts/generate-quotes.mjs
+```
 
-- `/prizes/peace/` -> 노벨 평화상
-- `/prizes/literature/` -> 노벨 문학상
-- `/prizes/chemistry/` -> 노벨 화학상
+노벨 수상자 명언의 수상 분야는 각주 URL 경로로 자동 분류됩니다.
+
+| URL 경로 | 표시 |
+|----------|------|
+| `/prizes/peace/` | 노벨 평화상 |
+| `/prizes/literature/` | 노벨 문학상 |
+| `/prizes/chemistry/` | 노벨 화학상 |
+| `/prizes/economic` | 노벨 경제학상 |
 
 ## 사용 기술
 
-- HTML
-- CSS
+- HTML5
+- CSS3 (반응형, CSS 변수, 그라데이션)
 - Vanilla JavaScript
+- [html2canvas](https://html2canvas.hertzen.com/) (CDN, PNG 저장)
 
 ## 만든 사람
 
-Developer: jjs
+Developer: **jjs**
